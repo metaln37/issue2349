@@ -1,0 +1,201 @@
+ 
+b=LearnableParameter [4715,1]   learningRateMultiplier=1.000000  NeedsGradient=true 
+CR=Plus ( CR2 , scaledCR1 ) 
+CR1=CrossEntropyWithSoftmax ( labels , LSTMoutputW ) 
+CR2=DummyCriterion ( objectives , derivatives , LSTMoutputW ) 
+derivatives=InputValue [ 4715 ] 
+Err=ClassificationError ( labels , LSTMoutputW ) 
+feashift=Slice ( features ) 
+featNorm=ElementTimes ( featNorm.xNorm.ElementTimesArgs[0] , featNorm.xStdDev ) 
+featNorm.xMean=Mean ( feashift ) [80]   HasComputed=true 
+featNorm.xNorm.ElementTimesArgs[0]=Minus ( feashift , featNorm.xMean ) 
+featNorm.xStdDev=InvStdDev ( feashift ) [80]   HasComputed=true 
+features=InputValue [ 880 ] 
+labels=InputValue [ 4715 ] 
+logPrior=Log ( logPrior.Prior ) 
+logPrior.Prior=Mean ( labels ) [4715]   HasComputed=true 
+LSTM1.bc=LearnableParameter [512,1]   learningRateMultiplier=1.000000  NeedsGradient=true 
+LSTM1.bf=LearnableParameter [512,1]   learningRateMultiplier=1.000000  NeedsGradient=true 
+LSTM1.bft=ElementTimes ( LSTM1.ft , LSTM1.dc ) 
+LSTM1.bi=LearnableParameter [512,1]   learningRateMultiplier=1.000000  NeedsGradient=true 
+LSTM1.bit=ElementTimes ( LSTM1.it , LSTM1.bit.y ) 
+LSTM1.bit.y=Tanh ( LSTM1.bit.y.z ) 
+LSTM1.bit.y.z=Plus ( LSTM1.Wxcx , LSTM1.bit.y.z.y ) 
+LSTM1.bit.y.z.y=Plus ( LSTM1.Whcdh , LSTM1.bc ) 
+LSTM1.bo=LearnableParameter [512,1]   learningRateMultiplier=1.000000  NeedsGradient=true 
+LSTM1.ct=Plus ( LSTM1.bft , LSTM1.bit ) 
+LSTM1.dc=PastValue ( LSTM1.ct ) 
+LSTM1.dh=PastValue ( LSTM1.output ) 
+LSTM1.ft=Sigmoid ( LSTM1.ft._ ) 
+LSTM1.ft._=Plus ( LSTM1.ft._._ , LSTM1.Wcfdc ) 
+LSTM1.ft._._=Plus ( LSTM1.ft._._._ , LSTM1.Whfdh ) 
+LSTM1.ft._._._=Plus ( LSTM1.Wxfx , LSTM1.bf ) 
+LSTM1.it=Sigmoid ( LSTM1.it._ ) 
+LSTM1.it._=Plus ( LSTM1.it._._ , LSTM1.Wcidc ) 
+LSTM1.it._._=Plus ( LSTM1.it._._._ , LSTM1.Whidh ) 
+LSTM1.it._._._=Plus ( LSTM1.Wxix , LSTM1.bi ) 
+LSTM1.mt=ElementTimes ( LSTM1.ot , LSTM1.mt.y ) 
+LSTM1.mt.y=Tanh ( LSTM1.ct ) 
+LSTM1.ot=Sigmoid ( LSTM1.ot._ ) 
+LSTM1.ot._=Plus ( LSTM1.ot._._ , LSTM1.Wcoct ) 
+LSTM1.ot._._=Plus ( LSTM1.ot._._._ , LSTM1.Whodh ) 
+LSTM1.ot._._._=Plus ( LSTM1.Wxox , LSTM1.bo ) 
+LSTM1.output=Times ( LSTM1.Wmr , LSTM1.mt ) 
+LSTM1.Wcf=LearnableParameter [512,1]   learningRateMultiplier=1.000000  NeedsGradient=true 
+LSTM1.Wcfdc=ElementTimes ( LSTM1.Wcf , LSTM1.dc ) 
+LSTM1.Wci=LearnableParameter [512,1]   learningRateMultiplier=1.000000  NeedsGradient=true 
+LSTM1.Wcidc=ElementTimes ( LSTM1.Wci , LSTM1.dc ) 
+LSTM1.Wco=LearnableParameter [512,1]   learningRateMultiplier=1.000000  NeedsGradient=true 
+LSTM1.Wcoct=ElementTimes ( LSTM1.Wco , LSTM1.ct ) 
+LSTM1.Whc=LearnableParameter [512,256]   learningRateMultiplier=1.000000  NeedsGradient=true 
+LSTM1.Whcdh=Times ( LSTM1.Whc , LSTM1.dh ) 
+LSTM1.Whf=LearnableParameter [512,256]   learningRateMultiplier=1.000000  NeedsGradient=true 
+LSTM1.Whfdh=Times ( LSTM1.Whf , LSTM1.dh ) 
+LSTM1.Whi=LearnableParameter [512,256]   learningRateMultiplier=1.000000  NeedsGradient=true 
+LSTM1.Whidh=Times ( LSTM1.Whi , LSTM1.dh ) 
+LSTM1.Who=LearnableParameter [512,256]   learningRateMultiplier=1.000000  NeedsGradient=true 
+LSTM1.Whodh=Times ( LSTM1.Who , LSTM1.dh ) 
+LSTM1.Wmr=LearnableParameter [256,512]   learningRateMultiplier=1.000000  NeedsGradient=true 
+LSTM1.Wxc=LearnableParameter [512,80]   learningRateMultiplier=1.000000  NeedsGradient=true 
+LSTM1.Wxcx=Times ( LSTM1.Wxc , featNorm ) 
+LSTM1.Wxf=LearnableParameter [512,80]   learningRateMultiplier=1.000000  NeedsGradient=true 
+LSTM1.Wxfx=Times ( LSTM1.Wxf , featNorm ) 
+LSTM1.Wxi=LearnableParameter [512,80]   learningRateMultiplier=1.000000  NeedsGradient=true 
+LSTM1.Wxix=Times ( LSTM1.Wxi , featNorm ) 
+LSTM1.Wxo=LearnableParameter [512,80]   learningRateMultiplier=1.000000  NeedsGradient=true 
+LSTM1.Wxox=Times ( LSTM1.Wxo , featNorm ) 
+LSTM2.bc=LearnableParameter [512,1]   learningRateMultiplier=1.000000  NeedsGradient=true 
+LSTM2.bf=LearnableParameter [512,1]   learningRateMultiplier=1.000000  NeedsGradient=true 
+LSTM2.bft=ElementTimes ( LSTM2.ft , LSTM2.dc ) 
+LSTM2.bi=LearnableParameter [512,1]   learningRateMultiplier=1.000000  NeedsGradient=true 
+LSTM2.bit=ElementTimes ( LSTM2.it , LSTM2.bit.y ) 
+LSTM2.bit.y=Tanh ( LSTM2.bit.y.z ) 
+LSTM2.bit.y.z=Plus ( LSTM2.Wxcx , LSTM2.bit.y.z.y ) 
+LSTM2.bit.y.z.y=Plus ( LSTM2.Whcdh , LSTM2.bc ) 
+LSTM2.bo=LearnableParameter [512,1]   learningRateMultiplier=1.000000  NeedsGradient=true 
+LSTM2.bp=LearnableParameter [512,1]   learningRateMultiplier=1.000000  NeedsGradient=true 
+LSTM2.bpt=ElementTimes ( LSTM2.pt , LSTMC1 ) 
+LSTM2.ct=Plus ( LSTM2.ct._ , LSTM2.bpt ) 
+LSTM2.ct._=Plus ( LSTM2.bft , LSTM2.bit ) 
+LSTM2.dc=PastValue ( LSTM2.ct ) 
+LSTM2.dh=PastValue ( LSTM2.output ) 
+LSTM2.ft=Sigmoid ( LSTM2.ft._ ) 
+LSTM2.ft._=Plus ( LSTM2.ft._._ , LSTM2.Wcfdc ) 
+LSTM2.ft._._=Plus ( LSTM2.ft._._._ , LSTM2.Whfdh ) 
+LSTM2.ft._._._=Plus ( LSTM2.Wxfx , LSTM2.bf ) 
+LSTM2.it=Sigmoid ( LSTM2.it._ ) 
+LSTM2.it._=Plus ( LSTM2.it._._ , LSTM2.Wcidc ) 
+LSTM2.it._._=Plus ( LSTM2.it._._._ , LSTM2.Whidh ) 
+LSTM2.it._._._=Plus ( LSTM2.Wxix , LSTM2.bi ) 
+LSTM2.mt=ElementTimes ( LSTM2.ot , LSTM2.mt.y ) 
+LSTM2.mt.y=Tanh ( LSTM2.ct ) 
+LSTM2.ot=Sigmoid ( LSTM2.ot._ ) 
+LSTM2.ot._=Plus ( LSTM2.ot._._ , LSTM2.Wcoct ) 
+LSTM2.ot._._=Plus ( LSTM2.ot._._._ , LSTM2.Whodh ) 
+LSTM2.ot._._._=Plus ( LSTM2.Wxox , LSTM2.bo ) 
+LSTM2.output=Times ( LSTM2.Wmr , LSTM2.mt ) 
+LSTM2.pt=Sigmoid ( LSTM2.pt._ ) 
+LSTM2.pt._=Plus ( LSTM2.pt._._ , LSTM2.Wppic ) 
+LSTM2.pt._._=Plus ( LSTM2.pt._._._ , LSTM2.Wcpdc ) 
+LSTM2.pt._._._=Plus ( LSTM2.Wxpx , LSTM2.bp ) 
+LSTM2.Wcf=LearnableParameter [512,1]   learningRateMultiplier=1.000000  NeedsGradient=true 
+LSTM2.Wcfdc=ElementTimes ( LSTM2.Wcf , LSTM2.dc ) 
+LSTM2.Wci=LearnableParameter [512,1]   learningRateMultiplier=1.000000  NeedsGradient=true 
+LSTM2.Wcidc=ElementTimes ( LSTM2.Wci , LSTM2.dc ) 
+LSTM2.Wco=LearnableParameter [512,1]   learningRateMultiplier=1.000000  NeedsGradient=true 
+LSTM2.Wcoct=ElementTimes ( LSTM2.Wco , LSTM2.ct ) 
+LSTM2.Wcp=LearnableParameter [512,1]   learningRateMultiplier=1.000000  NeedsGradient=true 
+LSTM2.Wcpdc=ElementTimes ( LSTM2.Wcp , LSTM2.dc ) 
+LSTM2.Whc=LearnableParameter [512,256]   learningRateMultiplier=1.000000  NeedsGradient=true 
+LSTM2.Whcdh=Times ( LSTM2.Whc , LSTM2.dh ) 
+LSTM2.Whf=LearnableParameter [512,256]   learningRateMultiplier=1.000000  NeedsGradient=true 
+LSTM2.Whfdh=Times ( LSTM2.Whf , LSTM2.dh ) 
+LSTM2.Whi=LearnableParameter [512,256]   learningRateMultiplier=1.000000  NeedsGradient=true 
+LSTM2.Whidh=Times ( LSTM2.Whi , LSTM2.dh ) 
+LSTM2.Who=LearnableParameter [512,256]   learningRateMultiplier=1.000000  NeedsGradient=true 
+LSTM2.Whodh=Times ( LSTM2.Who , LSTM2.dh ) 
+LSTM2.Wmr=LearnableParameter [256,512]   learningRateMultiplier=1.000000  NeedsGradient=true 
+LSTM2.Wpp=LearnableParameter [512,1]   learningRateMultiplier=1.000000  NeedsGradient=true 
+LSTM2.Wppic=ElementTimes ( LSTM2.Wpp , LSTMC1 ) 
+LSTM2.Wxc=LearnableParameter [512,256]   learningRateMultiplier=1.000000  NeedsGradient=true 
+LSTM2.Wxcx=Times ( LSTM2.Wxc , LSTM1.output ) 
+LSTM2.Wxf=LearnableParameter [512,256]   learningRateMultiplier=1.000000  NeedsGradient=true 
+LSTM2.Wxfx=Times ( LSTM2.Wxf , LSTM1.output ) 
+LSTM2.Wxi=LearnableParameter [512,256]   learningRateMultiplier=1.000000  NeedsGradient=true 
+LSTM2.Wxix=Times ( LSTM2.Wxi , LSTM1.output ) 
+LSTM2.Wxo=LearnableParameter [512,256]   learningRateMultiplier=1.000000  NeedsGradient=true 
+LSTM2.Wxox=Times ( LSTM2.Wxo , LSTM1.output ) 
+LSTM2.Wxp=LearnableParameter [512,256]   learningRateMultiplier=1.000000  NeedsGradient=true 
+LSTM2.Wxpx=Times ( LSTM2.Wxp , LSTM1.output ) 
+LSTM3.bc=LearnableParameter [512,1]   learningRateMultiplier=1.000000  NeedsGradient=true 
+LSTM3.bf=LearnableParameter [512,1]   learningRateMultiplier=1.000000  NeedsGradient=true 
+LSTM3.bft=ElementTimes ( LSTM3.ft , LSTM3.dc ) 
+LSTM3.bi=LearnableParameter [512,1]   learningRateMultiplier=1.000000  NeedsGradient=true 
+LSTM3.bit=ElementTimes ( LSTM3.it , LSTM3.bit.y ) 
+LSTM3.bit.y=Tanh ( LSTM3.bit.y.z ) 
+LSTM3.bit.y.z=Plus ( LSTM3.Wxcx , LSTM3.bit.y.z.y ) 
+LSTM3.bit.y.z.y=Plus ( LSTM3.Whcdh , LSTM3.bc ) 
+LSTM3.bo=LearnableParameter [512,1]   learningRateMultiplier=1.000000  NeedsGradient=true 
+LSTM3.bp=LearnableParameter [512,1]   learningRateMultiplier=1.000000  NeedsGradient=true 
+LSTM3.bpt=ElementTimes ( LSTM3.pt , LSTMC2 ) 
+LSTM3.ct=Plus ( LSTM3.ct._ , LSTM3.bpt ) 
+LSTM3.ct._=Plus ( LSTM3.bft , LSTM3.bit ) 
+LSTM3.dc=PastValue ( LSTM3.ct ) 
+LSTM3.dh=PastValue ( LSTM3.output ) 
+LSTM3.ft=Sigmoid ( LSTM3.ft._ ) 
+LSTM3.ft._=Plus ( LSTM3.ft._._ , LSTM3.Wcfdc ) 
+LSTM3.ft._._=Plus ( LSTM3.ft._._._ , LSTM3.Whfdh ) 
+LSTM3.ft._._._=Plus ( LSTM3.Wxfx , LSTM3.bf ) 
+LSTM3.it=Sigmoid ( LSTM3.it._ ) 
+LSTM3.it._=Plus ( LSTM3.it._._ , LSTM3.Wcidc ) 
+LSTM3.it._._=Plus ( LSTM3.it._._._ , LSTM3.Whidh ) 
+LSTM3.it._._._=Plus ( LSTM3.Wxix , LSTM3.bi ) 
+LSTM3.mt=ElementTimes ( LSTM3.ot , LSTM3.mt.y ) 
+LSTM3.mt.y=Tanh ( LSTM3.ct ) 
+LSTM3.ot=Sigmoid ( LSTM3.ot._ ) 
+LSTM3.ot._=Plus ( LSTM3.ot._._ , LSTM3.Wcoct ) 
+LSTM3.ot._._=Plus ( LSTM3.ot._._._ , LSTM3.Whodh ) 
+LSTM3.ot._._._=Plus ( LSTM3.Wxox , LSTM3.bo ) 
+LSTM3.output=Times ( LSTM3.Wmr , LSTM3.mt ) 
+LSTM3.pt=Sigmoid ( LSTM3.pt._ ) 
+LSTM3.pt._=Plus ( LSTM3.pt._._ , LSTM3.Wppic ) 
+LSTM3.pt._._=Plus ( LSTM3.pt._._._ , LSTM3.Wcpdc ) 
+LSTM3.pt._._._=Plus ( LSTM3.Wxpx , LSTM3.bp ) 
+LSTM3.Wcf=LearnableParameter [512,1]   learningRateMultiplier=1.000000  NeedsGradient=true 
+LSTM3.Wcfdc=ElementTimes ( LSTM3.Wcf , LSTM3.dc ) 
+LSTM3.Wci=LearnableParameter [512,1]   learningRateMultiplier=1.000000  NeedsGradient=true 
+LSTM3.Wcidc=ElementTimes ( LSTM3.Wci , LSTM3.dc ) 
+LSTM3.Wco=LearnableParameter [512,1]   learningRateMultiplier=1.000000  NeedsGradient=true 
+LSTM3.Wcoct=ElementTimes ( LSTM3.Wco , LSTM3.ct ) 
+LSTM3.Wcp=LearnableParameter [512,1]   learningRateMultiplier=1.000000  NeedsGradient=true 
+LSTM3.Wcpdc=ElementTimes ( LSTM3.Wcp , LSTM3.dc ) 
+LSTM3.Whc=LearnableParameter [512,256]   learningRateMultiplier=1.000000  NeedsGradient=true 
+LSTM3.Whcdh=Times ( LSTM3.Whc , LSTM3.dh ) 
+LSTM3.Whf=LearnableParameter [512,256]   learningRateMultiplier=1.000000  NeedsGradient=true 
+LSTM3.Whfdh=Times ( LSTM3.Whf , LSTM3.dh ) 
+LSTM3.Whi=LearnableParameter [512,256]   learningRateMultiplier=1.000000  NeedsGradient=true 
+LSTM3.Whidh=Times ( LSTM3.Whi , LSTM3.dh ) 
+LSTM3.Who=LearnableParameter [512,256]   learningRateMultiplier=1.000000  NeedsGradient=true 
+LSTM3.Whodh=Times ( LSTM3.Who , LSTM3.dh ) 
+LSTM3.Wmr=LearnableParameter [256,512]   learningRateMultiplier=1.000000  NeedsGradient=true 
+LSTM3.Wpp=LearnableParameter [512,1]   learningRateMultiplier=1.000000  NeedsGradient=true 
+LSTM3.Wppic=ElementTimes ( LSTM3.Wpp , LSTMC2 ) 
+LSTM3.Wxc=LearnableParameter [512,256]   learningRateMultiplier=1.000000  NeedsGradient=true 
+LSTM3.Wxcx=Times ( LSTM3.Wxc , LSTM2.output ) 
+LSTM3.Wxf=LearnableParameter [512,256]   learningRateMultiplier=1.000000  NeedsGradient=true 
+LSTM3.Wxfx=Times ( LSTM3.Wxf , LSTM2.output ) 
+LSTM3.Wxi=LearnableParameter [512,256]   learningRateMultiplier=1.000000  NeedsGradient=true 
+LSTM3.Wxix=Times ( LSTM3.Wxi , LSTM2.output ) 
+LSTM3.Wxo=LearnableParameter [512,256]   learningRateMultiplier=1.000000  NeedsGradient=true 
+LSTM3.Wxox=Times ( LSTM3.Wxo , LSTM2.output ) 
+LSTM3.Wxp=LearnableParameter [512,256]   learningRateMultiplier=1.000000  NeedsGradient=true 
+LSTM3.Wxpx=Times ( LSTM3.Wxp , LSTM2.output ) 
+LSTMC1=Dropout ( LSTM1.ct ) 
+LSTMC2=Dropout ( LSTM2.ct ) 
+LSTMoutputW=Plus ( LSTMoutputW._ , b ) 
+LSTMoutputW._=Times ( W , LSTM3.output ) 
+objectives=InputValue [ 1 ] 
+scaledCR1=ElementTimes ( unnamed3 , CR1 ) 
+ScaledLogLikelihood=Minus ( LSTMoutputW , logPrior ) 
+unnamed3=LearnableParameter [1,1]   learningRateMultiplier=0.000000  NeedsGradient=false 
+W=LearnableParameter [4715,256]   learningRateMultiplier=1.000000  NeedsGradient=true

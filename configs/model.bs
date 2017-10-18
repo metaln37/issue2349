@@ -1,0 +1,176 @@
+# Macro definitions
+MeanVarNorm(x)={
+    xMean = Mean(x);
+    xStdDev = InvStdDev(x)
+    xNorm=PerDimMeanVarNormalization(x,xMean,xStdDev)
+}.xNorm
+
+LogPrior(labels)={
+    Prior=Mean(labels)
+    #CPrior=Clip(Prior, 1e20, 1e-20) # clipping to avoid undef values after log
+    LPrior=Log(Prior)
+}.LPrior
+
+
+LSTMPComponent(inputDim, outputDim, cellDim, inputx)={
+    Wxo = ParameterTensor((cellDim:inputDim), init="uniform", initValueScale=1);
+    Wxi = ParameterTensor((cellDim:inputDim), init="uniform", initValueScale=1);
+    Wxf = ParameterTensor((cellDim:inputDim), init="uniform", initValueScale=1);
+    Wxc = ParameterTensor((cellDim:inputDim), init="uniform", initValueScale=1);
+
+    bo = ParameterTensor(cellDim, init="fixedValue", value=0.0);
+    bc = ParameterTensor(cellDim, init="fixedValue", value=0.0);
+    bi = ParameterTensor(cellDim, init="fixedValue", value=0.0);
+    bf = ParameterTensor(cellDim, init="fixedValue", value=0.0);
+
+    Whi = ParameterTensor((cellDim:outputDim), init="uniform", initValueScale=1);
+
+    Wci = ParameterTensor(cellDim, init="uniform", initValueScale=1);
+
+
+    Whf = ParameterTensor((cellDim:outputDim), init="uniform", initValueScale=1);
+    Wcf = ParameterTensor(cellDim, init="uniform", initValueScale=1);
+    Who = ParameterTensor((cellDim:outputDim), init="uniform", initValueScale=1);
+    Wco = ParameterTensor(cellDim, init="uniform", initValueScale=1);
+    Whc = ParameterTensor((cellDim:outputDim), init="uniform", initValueScale=1);
+
+    dh = PastValue(outputDim, output, timeStep=1);
+    dc = PastValue(cellDim, ct, timeStep=1);
+
+
+    Wxix = Times(Wxi, inputx);
+    Whidh = Times(Whi, dh);
+    Wcidc = ElementTimes(Wci, dc);
+
+    it = Sigmoid (Plus ( Plus (Plus (Wxix, bi), Whidh), Wcidc));
+
+    Wxcx = Times(Wxc, inputx);
+    Whcdh = Times(Whc, dh);
+    bit = ElementTimes(it, Tanh( Plus(Wxcx, Plus(Whcdh, bc))));
+
+    Wxfx = Times(Wxf, inputx);
+    Whfdh = Times(Whf, dh);
+    Wcfdc = ElementTimes(Wcf, dc);
+
+    ft = Sigmoid( Plus (Plus (Plus(Wxfx, bf), Whfdh), Wcfdc));
+
+    bft = ElementTimes(ft, dc);
+
+    ct = Plus(bft, bit);
+
+    Wxox  = Times(Wxo, inputx);
+    Whodh = Times(Who, dh);
+    Wcoct = ElementTimes(Wco, ct);
+
+    ot = Sigmoid( Plus( Plus( Plus(Wxox, bo), Whodh), Wcoct));
+
+    mt = ElementTimes(ot, Tanh(ct));
+
+    Wmr = ParameterTensor((outputDim:cellDim), init="uniform", initValueScale=1);
+    output = Times(Wmr, mt);
+
+}
+
+
+LSTMPComponentWithLayerBelow(inputDim, outputDim, cellDim, inputx, inputc)={
+    Wxo = ParameterTensor((cellDim:inputDim), init="uniform", initValueScale=1);
+    Wxi = ParameterTensor((cellDim:inputDim), init="uniform", initValueScale=1);
+    Wxf = ParameterTensor((cellDim:inputDim), init="uniform", initValueScale=1);
+    Wxc = ParameterTensor((cellDim:inputDim), init="uniform", initValueScale=1);
+
+    bo = ParameterTensor(cellDim, init="fixedValue", value=0.0);
+    bc = ParameterTensor(cellDim, init="fixedValue", value=0.0);
+    bi = ParameterTensor(cellDim, init="fixedValue", value=0.0);
+    bf = ParameterTensor(cellDim, init="fixedValue", value=0.0);
+
+    Whi = ParameterTensor((cellDim:outputDim), init="uniform", initValueScale=1);
+
+    Wci = ParameterTensor(cellDim, init="uniform", initValueScale=1);
+
+
+    Whf = ParameterTensor((cellDim:outputDim), init="uniform", initValueScale=1);
+    Wcf = ParameterTensor(cellDim, init="uniform", initValueScale=1);
+    Who = ParameterTensor((cellDim:outputDim), init="uniform", initValueScale=1);
+    Wco = ParameterTensor(cellDim, init="uniform", initValueScale=1);
+    Whc = ParameterTensor((cellDim:outputDim), init="uniform", initValueScale=1);
+
+    #for direct links from previous layer's internal state (p)
+    Wpp = ParameterTensor(cellDim, init="uniform", initValueScale=1);
+    Wcp = ParameterTensor(cellDim, init="uniform", initValueScale=1);
+    Wxp = ParameterTensor((cellDim:inputDim), init="uniform", initValueScale=1);
+    bp = ParameterTensor(cellDim, init="fixedValue", value=0.0);
+
+
+    dh = PastValue(outputDim, output, timeStep=1);
+    dc = PastValue(cellDim, ct, timeStep=1);
+
+    Wxix = Times(Wxi, inputx);
+    Whidh = Times(Whi, dh);
+    Wcidc = ElementTimes(Wci, dc);
+
+    it = Sigmoid (Plus ( Plus (Plus (Wxix, bi), Whidh), Wcidc));
+
+    Wxcx = Times(Wxc, inputx);
+    Whcdh = Times(Whc, dh);
+    bit = ElementTimes(it, Tanh( Plus(Wxcx, Plus(Whcdh, bc))));
+
+    Wxfx = Times(Wxf, inputx);
+    Whfdh = Times(Whf, dh);
+    Wcfdc = ElementTimes(Wcf, dc);
+
+    ft = Sigmoid( Plus (Plus (Plus(Wxfx, bf), Whfdh), Wcfdc));
+
+    bft = ElementTimes(ft, dc);
+
+    #for direct links from previous layer's internal state (p)
+    Wxpx = Times(Wxp, inputx);
+    Wcpdc = ElementTimes(Wcp, dc);
+    Wppic = ElementTimes(Wpp, inputc);
+    pt = Sigmoid( Plus (Plus (Plus(Wxpx, bp), Wcpdc), Wppic));
+    bpt = ElementTimes(pt, inputc);
+
+    ct = Plus(Plus(bft, bit), bpt);
+
+    Wxox  = Times(Wxo, inputx);
+    Whodh = Times(Who, dh);
+    Wcoct = ElementTimes(Wco, ct);
+
+    ot = Sigmoid( Plus( Plus( Plus(Wxox, bo), Whodh), Wcoct));
+
+    mt = ElementTimes(ot, Tanh(ct));
+
+    Wmr = ParameterTensor((outputDim:cellDim), init="uniform", initValueScale=1);
+    output = Times(Wmr, mt);
+
+}
+
+##### MAIN ####
+
+cellDim=512
+hiddenDim=256
+
+features=Input(FeatDim, tag="feature")
+labels=Input(labelDim, tag="label")
+feashift=Slice(RowSliceStart, RowSliceStart+baseFeatDim, features, axis = 1)
+
+featNorm = MeanVarNorm(feashift)
+
+# layer 1
+LSTM1 = LSTMPComponent(baseFeatDim, hiddenDim, cellDim, featNorm);
+# layer 2
+LSTMC1 = Dropout(LSTM1.ct);
+LSTM2 = LSTMPComponentWithLayerBelow(hiddenDim, hiddenDim, cellDim, LSTM1.output, LSTMC1);
+# layer 3
+LSTMC2 = Dropout(LSTM2.ct);
+LSTM3 = LSTMPComponentWithLayerBelow(hiddenDim, hiddenDim, cellDim, LSTM2.output, LSTMC2);
+
+W = ParameterTensor((labelDim:hiddenDim), init="uniform", initValueScale=1);
+b = ParameterTensor(labelDim, init="fixedValue", value=0);
+LSTMoutputW = Plus(Times(W, LSTM3.output), b);
+
+
+cr = CrossEntropyWithSoftmax(labels, LSTMoutputW,tag="criterion");
+Err = ErrorPrediction(labels,LSTMoutputW,tag="evaluation");
+
+logPrior = LogPrior(labels)
+ScaledLogLikelihood=Minus(LSTMoutputW,logPrior,tag="output")
